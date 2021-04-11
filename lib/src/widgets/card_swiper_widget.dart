@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_movies/src/models/pelicula_model.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 
 class CardSwiperd extends StatelessWidget {
-  final List<dynamic> peliculas;
+  final List<Pelicula> peliculas;
 
   CardSwiperd({@required this.peliculas});
 
@@ -19,9 +20,11 @@ class CardSwiperd extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return ClipRRect(
             borderRadius: BorderRadius.circular(20.0),
-            child: Image.network(
-              "https://empresas.blogthinkbig.com/wp-content/uploads/2019/11/Imagen3-245003649.jpg?w=800",
-              fit: BoxFit.cover)
+            child: FadeInImage(
+              image: NetworkImage(peliculas[index].getPosterImg()),
+              placeholder: AssetImage('assets/img/no-image.jpg'),
+              fit: BoxFit.cover,
+            )
           );
           
         },

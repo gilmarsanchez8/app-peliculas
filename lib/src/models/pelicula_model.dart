@@ -62,4 +62,12 @@ class Pelicula {
     voteAverage = json['vote_average'] / 1;
     voteCount = json['vote_count'];
   }
+
+  getPosterImg() {
+    if (posterPath == null) {
+      return 'https://makotopanama.com/wp-content/plugins/smg-theme-tools-master-0d8135f9722217011e2b925af5866b5bffb3bb5a/images/not-available-es.png';
+    }else{
+      return 'https://image.tmdb.org/t/p/w500/$posterPath';
+    }
+  }
 }
