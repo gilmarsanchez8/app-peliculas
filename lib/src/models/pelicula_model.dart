@@ -1,4 +1,5 @@
 class Peliculas {
+  // ignore: deprecated_member_use
   List<Pelicula> items = new List();
 
   Peliculas();
