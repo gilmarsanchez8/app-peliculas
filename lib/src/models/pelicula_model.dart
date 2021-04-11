@@ -71,4 +71,12 @@ class Pelicula {
       return 'https://image.tmdb.org/t/p/w500/$posterPath';
     }
   }
+
+  getBackgroundImg() {
+    if (backdropPath == null) {
+      return 'https://makotopanama.com/wp-content/plugins/smg-theme-tools-master-0d8135f9722217011e2b925af5866b5bffb3bb5a/images/not-available-es.png';
+    }else{
+      return 'https://image.tmdb.org/t/p/w500/$backdropPath';
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter_app_movies/src/models/actores_model.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter_app_movies/src/models/pelicula_model.dart';
@@ -11,15 +12,19 @@ class PeliculasProvider {
   String _language = 'es-ES';
 
   int _popularesPage = 0;
+  bool _cargando = false;
 
   // ignore: deprecated_member_use
   List<Pelicula> _populares = new List();
 
-  final _popularesStreamController = StreamController<List<Pelicula>>.broadcast();
+  final _popularesStreamController =
+      StreamController<List<Pelicula>>.broadcast();
 
-  Function(List<Pelicula>) get popularesSink => _popularesStreamController.sink.add;
+  Function(List<Pelicula>) get popularesSink =>
+      _popularesStreamController.sink.add;
 
-  Stream<List<Pelicula>> get popularesStream => _popularesStreamController.stream;
+  Stream<List<Pelicula>> get popularesStream =>
+      _popularesStreamController.stream;
 
   void disposeStreams() {
     _popularesStreamController?.close();
@@ -41,6 +46,10 @@ class PeliculasProvider {
   }
 
   Future<List<Pelicula>> getPopulares() async {
+    if (_cargando) return [];
+
+    _cargando = true;
+
     _popularesPage++;
 
     final url = Uri.https(_url, '3/movie/popular', {
@@ -55,6 +64,19 @@ class PeliculasProvider {
 
     popularesSink(_populares);
 
+    _cargando = false;
+
     return resp;
+  }
+
+  Future<List<Actor>> getCast(String id) async {
+    final url = Uri.https(_url, '/3/movie/$id/credits',
+        {'api_key': _apikey, 'language': _language});
+
+    final resp = await http.get(url);
+    final decodedData = json.decode(resp.body);
+    final cast = new Cast.fromJsonList(decodedData['cast']);
+
+    return cast.actores;
   }
 }
