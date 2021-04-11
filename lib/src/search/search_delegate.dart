@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_movies/src/models/pelicula_model.dart';
+import 'package:flutter_app_movies/src/providers/peliculas_provider.dart';
 
 class DataSearch extends SearchDelegate {
   String seleccion = '';
+  final peliculasProvider = new PeliculasProvider();
 
   final peliculas = [
     'Spiderman',
@@ -53,22 +56,37 @@ class DataSearch extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    // Sugerencias a listar
-    final listaSugerida = (query.isEmpty)
-        ? peliculaRecientes
-        : peliculas.where((p) => p.toLowerCase().startsWith(query)).toList();
+    if (query.isEmpty) {
+      return Container();
+    }
 
-    return ListView.builder(
-        itemCount: listaSugerida.length,
-        itemBuilder: (context, i) {
-          return ListTile(
-            leading: Icon(Icons.movie),
-            title: Text(listaSugerida[i]),
-            onTap: () {
-              seleccion = listaSugerida[i];
-              showResults(context);
-            },
-          );
-        });
+    return FutureBuilder(
+      future: peliculasProvider.buscarPelicula(query),
+      builder: (BuildContext context, AsyncSnapshot<List<Pelicula>> snapshot) {
+        if (snapshot.hasData) {
+          final peliculas = snapshot.data;
+          return ListView(
+              children: peliculas.map((pelicula) {
+            return ListTile(
+              leading: FadeInImage(
+                image: NetworkImage(pelicula.getPosterImg()),
+                placeholder: AssetImage('assets/img/no-image.jpg'),
+                width: 50.0,
+                fit: BoxFit.contain,
+              ),
+              title: Text(pelicula.title),
+              subtitle: Text(pelicula.originalTitle),
+              onTap: () {
+                close(context, null);
+                pelicula.uniqueId = '';
+                Navigator.pushNamed(context, 'detalle', arguments: pelicula);
+              },
+            );
+          }).toList());
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
   }
 }
